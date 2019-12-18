@@ -5,21 +5,8 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-
-const notesData = getNotes();
-
-function getNotes() {
-    let data = fs.readFileSync('./db/db.json', 'utf8');
-
-    let notes = JSON.parse(data);
-
-    for (let i = 0; i < notes.length; i++) {
-        notes[i].id = '' + i;
-    }
-
-    return notes;
-}
-
+const noteData = require("./db/db.json");
+    
 // Sets up the Express App
 // =============================================================
 const app = express();
@@ -37,10 +24,6 @@ app.use(express.static("public"));
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
-// these two are likely the same ^ v
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
-});
 
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
@@ -48,20 +31,19 @@ app.get("/notes", function(req, res) {
 
 // GET request to display notes
 app.get("/api/notes", function (req, res) {
-  notesData = getNotes();
-  res.json(notesData);
+  let note = res.json(noteData);
+  console.log(note);
 });
 
-// Should recieve a new note to save on the request body, add it to the `db.json` file, and then return the new note to the client.
-// will need to parse JSON (happens up above)
 // POST request
-
   // note data is passed from front end via request body (c/o middleware)
 app.post("/api/notes", function (req, res) {
-  notesData.push(req.body);
-  fs.writeFileSync('./db/db.json', JSON.stringify(notesData), 'utf8');
+  noteData.push(req.body);
+  fs.writeFileSync('./db/db.json', JSON.stringify(noteData), 'utf8');
   res.json(true);
 });
+
+
 
   
 // Starts the server to begin listening
