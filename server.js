@@ -25,10 +25,6 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
-});
-
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
@@ -38,6 +34,8 @@ app.get("/api/notes", function (req, res) {
   res.json(noteData);
 });
 
+// POST function
+// Data is passed from front end via req.body (middleware)
 
 app.post("/api/notes", function (req, res) {
     noteArray = [];
@@ -71,6 +69,13 @@ app.post("/api/notes", function (req, res) {
 
 });
 
+// delete function
+
+app.delete("/api/notes:id", function (req, res){
+  const id = req.params.id;
+  console.log(`Deleting note: ${id}`);
+
+});
 
 
 
