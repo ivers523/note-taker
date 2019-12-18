@@ -25,27 +25,56 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
+
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
 // GET request to display notes
 app.get("/api/notes", function (req, res) {
-  let note = res.json(noteData);
-  console.log(note);
+  res.json(noteData);
 });
 
-// POST request
-  // note data is passed from front end via request body (c/o middleware)
+
 app.post("/api/notes", function (req, res) {
-  noteData.push(req.body);
-  fs.writeFileSync('./db/db.json', JSON.stringify(noteData), 'utf8');
-  res.json(true);
+    noteArray = [];
+    newNote = req.body;
+    function getData() {
+        fs.readFile("./db/db.json", "utf8", function (error, res) {
+            if (error) {
+                console.log(error);
+            }
+            noteArray = JSON.parse(res)
+            writeData();
+        });
+    } getData()
+
+    function writeData() {
+        noteArray.push(newNote)
+        for (let i = 0; i < noteArray.length; i++) {
+            note = noteArray[i]
+            note.id = i + 1
+        }
+        
+        fs.writeFile("./db/db.json", JSON.stringify(noteArray), function (err) {
+
+            if (err) {
+                return console.log(err);
+            }
+            console.log("note created");
+        });
+    }
+    res.sendFile(path.join(__dirname, "/db/db.json"));
+
 });
 
 
 
-  
+
+
 // Starts the server to begin listening
 // =============================================================
 app.listen(PORT, function () {
