@@ -38,13 +38,13 @@ app.get("/api/notes", function (req, res) {
 // Data is passed from front end via req.body (middleware)
 
 app.post("/api/notes", function (req, res) {
-    noteArray = [];
-    newNote = req.body;
-    function getData() {
-        fs.readFile("./db/db.json", "utf8", function (error, res) {
-            if (error) {
-                console.log(error);
-            }
+  let noteArray = [];
+  newNote = req.body;
+  function getData() {
+    fs.readFile("./db/db.json", "utf8", function (error, res) {
+          if (error) {
+            console.log(error);
+          }
             noteArray = JSON.parse(res)
             writeData();
         });
@@ -72,11 +72,30 @@ app.post("/api/notes", function (req, res) {
 // delete function
 
 app.delete("/api/notes:id", function (req, res){
-  const id = req.params.id;
-  console.log(`Deleting note: ${id}`);
-
+  let noteArray = [];
+  const deleteId = req.params.id;
+  console.log(`Deleting note: ${deleteId}`);
+  fs.readFile("./db/db.json", "utf8", function (error, res) {
+    if (error) {
+        console.log(error);
+    
+      }
+       noteArray = JSON.parse(res);
+      // filter object c/o https://codeburst.io/learn-understand-javascripts-filter-function-bde87bce206
+       noteArray = noteArray.filter(function(object){
+        return object.id != deleteId.id;
+      // filters the object to return a new array of objects that pass the condition
+      })
+      // rewrite noteArray
+      fs.writeFile("./db/db.json", JSON.stringify(noteArray), function (err) {
+        if (err){
+          console.log(err);
+        }
+    });
+  });
 });
 
+      
 
 
 
